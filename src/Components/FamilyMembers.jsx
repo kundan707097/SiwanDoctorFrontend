@@ -1,5 +1,6 @@
 ﻿/* eslint-disable react-hooks/rules-of-hooks */
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -39,8 +40,13 @@ import ErrorPage from "../Pages/ErrorPage";
 import { useNavigate } from "react-router-dom";
 
 const getData = async () => {
-  const res = await GET(`get_family_members/user/${user.id}`);
-  return res.data;
+  try {
+    const res = await GET(`get_family_members/user/${user.id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching family members:", error);
+    return [];
+  }
 };
 
 const handleAdd = async (data) => {
@@ -260,7 +266,7 @@ function FamilyMembers() {
                     >
                       Add New Family Member
                     </Button>
-                    {data && (
+                    {data && data.length ? (
                       <Box mt={5}>
                         {data.map((member) => (
                           <motion.div
@@ -323,6 +329,8 @@ function FamilyMembers() {
                           </motion.div>
                         ))}
                       </Box>
+                    ) : (
+                      <Alert variant={"danger"}>Family Members Not Found</Alert>
                     )}
                   </motion.div>
                 </AnimatePresence>

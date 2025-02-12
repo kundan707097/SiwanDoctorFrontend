@@ -59,7 +59,7 @@ const callback = (eventCallback) => {
     console.log({ response, token: response.token });
     // Replace the following code with your own logic
     console.log(response);
-    alert(JSON.stringify(response));
+    // alert(JSON.stringify(response));
   };
 
   const OTP_AUTO_READ = () => {

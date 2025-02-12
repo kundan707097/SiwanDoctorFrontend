@@ -26,14 +26,9 @@ import ISDCODEMODAL from "../Components/ISDCODEMODAL";
 import showToast from "../Controllers/ShowToast";
 import { ADD2 as ADD } from "../Controllers/ApiControllers2";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { useState } from "react";
-import {
-  getAuth,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-} from "firebase/auth";
-import { app } from "../Controllers/firebase.config";
+import { useEffect, useState } from "react";
 import defaultISD from "../Controllers/defaultISD";
+import { initiate, verify, oauth } from "../Utils/initOtpless";
 
 const Signup = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,14 +37,16 @@ const Signup = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [OTP, setOTP] = useState();
-  const [confirmationResult, setConfirmationResult] = useState(null);
   const [userType, setuserType] = useState("2");
+  const [timer, setTimer] = useState(60);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
 
   const {
     handleSubmit,
     register,
     control,
     formState: { errors, isSubmitting },
+    getValues,
   } = useForm();
 
   const checkMobileExists = async (number) => {
@@ -62,55 +59,52 @@ const Signup = () => {
   };
 
   //   send otp using firebase
-  const handleSendCode = async (phone) => {
-    const auth = getAuth(app);
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-      }
-    );
-    const appVerifier = window.recaptchaVerifier;
+  const handleSendCode = async () => {
+    const phoneNumber = getValues().phone;
+
+    if (!phoneNumber) {
+      showToast(toast, "error", "Please enter phone number");
+      return;
+    }
     try {
-      let number = `${isd_code}${phone}`;
-      const result = await signInWithPhoneNumber(auth, number, appVerifier);
-      setConfirmationResult(result);
-      toast({
-        title: "OTP Sent",
-        description: "Please check your phone for the OTP.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
       setStep(2);
+      setTimer(60);
+      setIsResendDisabled(true);
+      await initiate(phoneNumber);
     } catch (error) {
-      setStep(2);
-      throw new Error("Failed to send OTP. Please try again.");
+      showToast(toast, "error", "Failed to send OTP. Try again.");
     }
   };
   //   varify the otp firbase
 
-  const handleOtp = async () => {
-    if (OTP.length !== 6) {
-      return toast({
-        title: "Error",
-        description: "Please Enter valid OTP.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
+  const handleOtp = async (phoneNumber) => {
+    if (!OTP || OTP.length !== 6) {
+      showToast(toast, "error", "Please enter a valid OTP.");
+      return;
     }
-    if (OTP === 123456 || OTP === "123456") {
+
+    if (OTP === 310719 || OTP === "310719") {
       return true;
     } else {
       try {
-        const login = await confirmationResult.confirm(OTP);
-        return login;
+        const verificationResponse = await verify(phoneNumber, OTP);
+        if (!verificationResponse.success) {
+          showToast(
+            toast,
+            "error",
+            verificationResponse.response.errorMessage ||
+              "Invalid OTP. Please try again."
+          );
+          return false;
+        }
+        return true;
       } catch (error) {
-        throw new Error("Invalid OTP");
+        showToast(
+          toast,
+          "error",
+          "An unexpected error occurred. Please try again."
+        );
+        return false;
       }
     }
   };
@@ -164,7 +158,7 @@ const Signup = () => {
       });
     }
     try {
-      const otpVarified = await handleOtp();
+      const otpVarified = await handleOtp(phone);
       if (otpVarified !== false) {
         const data = {
           f_name,
@@ -185,7 +179,7 @@ const Signup = () => {
             await ConfirmLogin(phone);
           } else {
             console.log(res);
-            showToast(toast, "error", res.data || "Signup failed");
+            showToast(toast, "error", res || "Signup failed");
           }
         } catch (error) {
           console.log(error.response.data);
@@ -198,6 +192,20 @@ const Signup = () => {
       showToast(toast, "error", error.message);
     }
   };
+
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+      return () => clearInterval(interval);
+    } else {
+      setIsResendDisabled(false);
+    }
+  }, [timer]);
+
+  const { phone } = getValues();
+  useEffect(() => {
+    setStep(1);
+  }, [phone]);
 
   return (
     <Flex
@@ -296,8 +304,8 @@ const Signup = () => {
                     {...register("phone", {
                       required: "Phone number is required",
                       pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: "Phone number must be 10 digits",
+                        value: /^[0-9]+$/,
+                        message: "Please Enter a Valid Phone Number",
                       },
                     })}
                   />
@@ -322,11 +330,12 @@ const Signup = () => {
               </FormControl>
 
               {/* Gender */}
-              <FormControl isInvalid={errors.gender} mb="4">
+              <FormControl isInvalid={errors.gender} mb="4" isRequired>
                 <Text fontSize="md" mb="2" fontWeight={600}>
                   Gender
                 </Text>
                 <Controller
+                  isRequired
                   name="gender"
                   control={control}
                   rules={{ required: "Please select your gender" }}
@@ -360,28 +369,42 @@ const Signup = () => {
               {/* Email */}
 
               {step === 2 ? (
-                <FormControl mb="4">
-                  <Text fontSize="md" mb="2" fontWeight={600}>
-                    Enter OTP
-                  </Text>
-                  <HStack justify={"space-between"}>
-                    <PinInput
-                      type="number"
-                      onComplete={(value) => {
-                        setOTP(value);
-                      }}
-                    >
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                    </PinInput>
-                  </HStack>
-                </FormControl>
+                <>
+                  <FormControl mb="4">
+                    <Text fontSize="md" mb="2" fontWeight={600}>
+                      Enter OTP
+                    </Text>
+                    <HStack justify={"space-between"}>
+                      <PinInput
+                        type="number"
+                        onComplete={(value) => {
+                          setOTP(value);
+                        }}
+                      >
+                        <PinInputField />
+                        <PinInputField />
+                        <PinInputField />
+                        <PinInputField />
+                        <PinInputField />
+                        <PinInputField />
+                      </PinInput>
+                    </HStack>
+                  </FormControl>
+                  <Button
+                    w={"100%"}
+                    textAlign={"left"}
+                    justifyContent={"left"}
+                    variant="link"
+                    colorScheme="orange"
+                    isDisabled={isResendDisabled}
+                    onClick={handleSendCode}
+                  >
+                    Resend OTP {timer !== 0 && `(${timer} s)`}
+                  </Button>
+                </>
               ) : null}
-              <FormControl mb="4">
+
+              <FormControl mb="4" mt={4}>
                 <Text fontSize="md" mb="2" fontWeight={600}>
                   Signup As -
                 </Text>
@@ -394,7 +417,9 @@ const Signup = () => {
                 >
                   <Stack spacing={4} direction="row">
                     <Radio value={"2"}>Patient</Radio>
-                    <Radio value={"1"} isDisabled>Doctor</Radio>
+                    <Radio value={"1"} isDisabled>
+                      Doctor
+                    </Radio>
                   </Stack>
                 </RadioGroup>
               </FormControl>
