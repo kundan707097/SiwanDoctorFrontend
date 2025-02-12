@@ -18,3 +18,14 @@
   transition: background-color 0.2s ease;
 }
 
+
+
+#otpless-button-mask {
+  z-index: 99999 !important;
+}
+#otpless-login-page {
+  z-index: 100000 !important; /* Ensure it stays above everything */
+}
+#otpless-login-page-parent{
+  z-index: 99999 !important;
+}

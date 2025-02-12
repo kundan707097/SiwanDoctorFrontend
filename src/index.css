@@ -286,3 +286,17 @@ body {
 .no-chakra {
   all: unset;
 }
+
+#otpless-login-page-frame {
+  z-index: 9999999 !important;
+}
+
+#otpless-button-mask {
+  z-index: 99999 !important;
+}
+#otpless-login-page {
+  z-index: 1000009999 !important; /* Ensure it stays above everything */
+}
+#otpless-login-page-parent{
+  z-index: 9999988888888 !important;
+}

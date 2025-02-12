@@ -1,4 +1,4 @@
-﻿import { BsPrescription } from "react-icons/bs"; 
+﻿import { BsPrescription } from "react-icons/bs";
 import { CgFileDocument } from "react-icons/cg";
 import { MdFamilyRestroom } from "react-icons/md";
 /* eslint-disable react/prop-types */
@@ -128,7 +128,7 @@ export default function TopbarNew() {
       position="sticky"
       top="0"
       left="0"
-      zIndex={999}
+      zIndex={"1000"}
     >
       <Box className="container">
         {" "}
@@ -136,7 +136,7 @@ export default function TopbarNew() {
           width="100%"
           bg={"primary.main"}
           color={useColorModeValue("#fff", "white")}
-          zIndex={99}
+          zIndex={988}
           minH={"60px"}
           py={{ base: 2 }}
           borderStyle={"solid"}
