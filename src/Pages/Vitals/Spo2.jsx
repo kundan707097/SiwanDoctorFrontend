@@ -96,7 +96,7 @@ function SpO2({ selectedMember, startDate, endDate }) {
 
   const getData = async () => {
     const res = await GET(
-      `get_vitals_family_member_id_type?family_member_id=${selectedMember.id}&type=SpO2&start_date=${startDate}&end_date=${endDate}`
+      `get_vitals_family_member_id_type?familyMemberId=${selectedMember.id}&type=SpO2&startDate=${startDate}&endDate=${endDate}`
     );
 
     return res.data;

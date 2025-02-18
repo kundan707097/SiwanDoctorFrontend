@@ -24,7 +24,6 @@ const RazorpayPaymentController = ({
   cancelFn,
   type,
 }) => {
-  
   const [isPaymentLoading, setisPaymentLoading] = useState(false);
   const toast = useToast();
   const razorpayRef = useRef(null);
@@ -41,8 +40,6 @@ const RazorpayPaymentController = ({
         description: data.desc || "Test Transaction",
         order_id: order_id,
         handler: function (response) {
-          
-
           nextFn(response.razorpay_payment_id);
           onClose();
           razorpayRef.current = null;
@@ -76,7 +73,6 @@ const RazorpayPaymentController = ({
       razorpayRef.current = new window.Razorpay(options);
 
       razorpayRef.current.on("payment.failed", function (response) {
-        
         alert(response.error.description);
         onClose();
         setisPaymentLoading(false);
@@ -85,7 +81,7 @@ const RazorpayPaymentController = ({
       });
 
       razorpayRef.current.on("payment.closed", function (response) {
-        
+        console.log(response);
         onClose();
         setisPaymentLoading(false);
         razorpayRef.current = null;
@@ -107,12 +103,11 @@ const RazorpayPaymentController = ({
       try {
         setisPaymentLoading(true);
         const response = await ADD(user.token, "create_rz_order", formData);
-        
+
         onClose();
         setisPaymentLoading(false);
         placeOrder(response.id);
       } catch (error) {
-        
         setisPaymentLoading(false);
         showToast(toast, "error", JSON.stringify(error));
         onClose();

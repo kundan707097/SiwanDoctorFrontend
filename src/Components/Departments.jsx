@@ -1,6 +1,6 @@
 ﻿/* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from "@tanstack/react-query";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import {
   Box,
   Flex,
@@ -18,7 +18,7 @@ import ErrorPage from "../Pages/ErrorPage";
 
 export default function Departments() {
   const getData = async () => {
-    const res = await GET("get_department_active");
+    const res = await GET("get_department");
     return res.data;
   };
   const { isLoading, data, error } = useQuery({
@@ -84,10 +84,11 @@ export default function Departments() {
                       <Image
                         src={
                           item.image
-                            ? `${imageBaseURL}/${item.image}`
+                            ? `${item.image}`
                             : "imagePlaceholder.png"
                         }
                         w={{ base: "80px", md: "80px" }}
+                        lazy
                       />
                     </Box>
                     <Text

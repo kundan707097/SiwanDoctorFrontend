@@ -173,7 +173,7 @@ export default function TopbarNew() {
                 fontSize={[16, 18, 20]}
                 display={{ base: " ", md: "block" }}
               >
-                {name.value}
+                {/* {name.value} */}Siwan Doctor 
               </Text>
             </Flex>
 

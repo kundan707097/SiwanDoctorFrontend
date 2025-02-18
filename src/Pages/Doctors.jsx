@@ -1,7 +1,7 @@
 ﻿/* eslint-disable react/no-children-prop */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from "@tanstack/react-query";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import {
   Box,
   Flex,
@@ -39,7 +39,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 
 export default function Doctors() {
   const getData = async () => {
-    const res = await GET("get_active_doctor");
+    const res = await GET("get_doctor");
     return res.data;
   };
   const { isLoading, data, error } = useQuery({
@@ -146,7 +146,7 @@ export default function Doctors() {
                       transition={"border 0.1s ease"}
                       border={"1px solid #fff"}
                       as={Link}
-                      to={`/doctor/${item.user_id}`}
+                      to={`/doctor/${item.id}`}
                     >
                       <Box cursor={"pointer"} padding={5}>
                         {" "}

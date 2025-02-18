@@ -2,7 +2,7 @@
 import { AiOutlineArrowRight } from "react-icons/ai";
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from "@tanstack/react-query";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import {
   Box,
   Button,
@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
 
 export default function Doctors() {
   const getData = async () => {
-    const res = await GET("get_active_doctor");
+    const res = await GET("get_doctor");
     return res.data;
   };
   const { isLoading, data, error } = useQuery({
@@ -121,7 +121,7 @@ export default function Doctors() {
                       fontSize={{ base: "18px", md: "20px", lg: "20px" }}
                       fontWeight={600}
                       as={Link}
-                      to={`/doctor/${item.user_id}`}
+                      to={`/doctor/${item.id}`}
                     >
                       {item.f_name} {item.l_name}
                     </Text>

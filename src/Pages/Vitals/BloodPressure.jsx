@@ -93,7 +93,7 @@ function BloodPressure({ selectedMember, startDate, endDate }) {
   const theme = useTheme();
   const getData = async () => {
     const res = await GET(
-      `get_vitals_family_member_id_type?family_member_id=${selectedMember.id}&type=Blood Pressure&start_date=${startDate}&end_date=${endDate}`
+      `get_vitals_family_member_id_type?familyMemberId=${selectedMember.id}&type=Blood Pressure&startDate=${startDate}&endDate=${endDate}`
     );
     return res.data;
   };

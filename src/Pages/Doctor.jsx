@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Components/Loading";
 import imageBaseURL from "../Controllers/image";
@@ -78,7 +78,8 @@ export default function Doctor() {
 
   const getData = async () => {
     const res = await GET(`get_doctor/${id}`);
-    return res.data;
+    console.lg
+    return res.data[0];
   };
   const { isLoading, data } = useQuery({
     queryKey: ["Doctor", id],
@@ -130,7 +131,6 @@ export default function Doctor() {
         </Box>
       </Box>{" "}
       <Box className="container" mt={10} pb={10}>
-        {" "}
         <Flex gap={10} flexDir={{ base: "column", md: "row" }}>
           <Box
             backgroundColor={"#FFF"}
@@ -147,8 +147,8 @@ export default function Doctor() {
               {" "}
               <Image
                 src={
-                  data.image
-                    ? `${imageBaseURL}/${data.image}`
+                  data?.image
+                    ? `${imageBaseURL}/${data?.image}`
                     : "https://plus.unsplash.com/premium_photo-1661764878654-3d0fc2eefcca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGRvY3RvcnxlbnwwfHwwfHx8MA%3D%3D"
                 }
                 w={"100%"}
@@ -187,7 +187,7 @@ export default function Doctor() {
                 color={"#000"}
                 fontWeight={700}
               >
-                {data.ex_year}+ Years Of Experience
+                {data?.ex_year}+ Years Of Experience
               </Text>
               <Text as={"span"} display={"flex"} gap={1} alignItems={"center"}>
                 <RatingStars rating={data.average_rating} />{" "}
