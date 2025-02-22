@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import Loading from "../Components/Loading";
 import { useQuery } from "@tanstack/react-query";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import user from "../Controllers/user";
 import {
   FaCheckCircle,

@@ -3,21 +3,22 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  Avatar,
   Box,
   Button,
   Divider,
   Flex,
   HStack,
   IconButton,
-  Image,
+  Link,
   Text,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { GET2 as GET } from "../Controllers/ApiControllers2";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Components/Loading";
-import imageBaseURL from "../Controllers/image";
 import { BiCalendar } from "react-icons/bi";
 import {
   FaInstagram,
@@ -37,6 +38,8 @@ import LoginModal from "../Components/LoginModal";
 import currency from "../Controllers/currency";
 import DoctorReviews from "../Components/DoctorReviews";
 import useSettingsData from "../Hooks/SettingData";
+import { ImLocation } from "react-icons/im";
+import { EmailIcon, PhoneIcon } from "@chakra-ui/icons";
 
 const feeData = [
   {
@@ -75,10 +78,11 @@ export default function Doctor() {
   const stopBooking = settingsData?.find(
     (value) => value.id_name === "stop_booking"
   );
+  const [open, setopen] = useState(false);
 
   const getData = async () => {
     const res = await GET(`get_doctor/${id}`);
-    console.lg
+    console.lg;
     return res.data[0];
   };
   const { isLoading, data } = useQuery({
@@ -91,13 +95,13 @@ export default function Doctor() {
   const isDisableTypeButton = (ID, doc) => {
     switch (ID) {
       case 1:
-        return doc.video_appointment;
+        return 1;
       case 2:
-        return doc.clinic_appointment;
+        return 1;
       case 3:
-        return doc.emergency_appointment;
+        return 1;
       default:
-        return "Unknown Step";
+        return 1;
     }
   };
 
@@ -114,6 +118,7 @@ export default function Doctor() {
     }
   };
   if (isLoading) return <Loading />;
+
   return (
     <Box>
       <Box bg={"primary.main"} p={0} py={{ base: "5", md: "10" }}>
@@ -130,141 +135,191 @@ export default function Doctor() {
           </Text>
         </Box>
       </Box>{" "}
-      <Box className="container" mt={10} pb={10}>
-        <Flex gap={10} flexDir={{ base: "column", md: "row" }}>
+      <Box className="container" minH={"80vh"}>
+        <Flex justify={"center"}>
+          {" "}
           <Box
-            backgroundColor={"#FFF"}
-            borderRadius={10}
-            boxShadow={"2px 2px 20px 0 rgb(82 66 47 / 12%)"}
-            w={{ base: "100%", md: "40%" }}
-            p={2}
+            p={[2, 4, 5]}
+            shadow="lg"
+            borderWidth="1px"
+            borderRadius="lg"
+            mx="auto"
+            bg="white"
+            mt={5}
+            w={600}
+            maxW={"100vw"}
           >
-            <Box
-              overflow={"hidden"}
-              w={"100%"}
-              borderRadius={data.image ? "2%" : "2%"}
-            >
-              {" "}
-              <Image
-                src={
-                  data?.image
-                    ? `${imageBaseURL}/${data?.image}`
-                    : "https://plus.unsplash.com/premium_photo-1661764878654-3d0fc2eefcca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGRvY3RvcnxlbnwwfHwwfHx8MA%3D%3D"
-                }
-                w={"100%"}
-                h={"500"}
-                objectFit="cover"
-                objectPosition={"top"}
+            <Flex alignItems="center" mb={5} gap={5}>
+              <Avatar
+                borderRadius={8}
+                size="2xl"
+                src={`${data.image}`}
+                fallbackSrc="https://via.placeholder.com/150"
               />
-            </Box>
-            <Box px={2}>
-              <Text
-                mt={4}
-                fontSize={{
-                  base: "16px",
-                  md: "16px",
-                  lg: "16px",
-                }}
-                fontWeight={700}
-                color={"gray.500"}
-                fontFamily={"Quicksand, sans-serif"}
-              >
-                {data.department_name}
-              </Text>{" "}
-              <Text
-                fontSize={18}
-                fontWeight={800}
-                fontFamily={"Quicksand, sans-serif"}
-              >
-                {data.f_name} {data.l_name}
-              </Text>
-              <Text
-                as={"span"}
-                display={"flex"}
-                gap={1}
-                alignItems={"center"}
-                fontSize={14}
-                color={"#000"}
-                fontWeight={700}
-              >
-                {data?.ex_year}+ Years Of Experience
-              </Text>
-              <Text as={"span"} display={"flex"} gap={1} alignItems={"center"}>
-                <RatingStars rating={data.average_rating} />{" "}
+              <Box>
+                <Text fontSize={["lg", "xl"]} fontWeight="bold">
+                  {data.f_name} {data.l_name}
+                </Text>
+                <Text
+                  fontWeight={700}
+                  color={"primary.text"}
+                  fontSize={["md", "lg"]}
+                >
+                  {data.department_name}
+                </Text>
+                <Text
+                  fontWeight={600}
+                  color={"gray.600"}
+                  fontSize={["sm", "sm"]}
+                >
+                  {data.specialization}
+                </Text>
                 <Text
                   as={"span"}
-                  mb={0}
-                  color={"#000"}
-                  fontSize={"xs"}
-                  fontWeight={600}
-                >
-                  {parseFloat(data.average_rating).toFixed(1)} (
-                  {data.number_of_reviews})
-                </Text>
-              </Text>
-              <Flex justify={"space-between"} mt={1}>
-                <Text
-                  fontSize={12}
-                  fontFamily={"Quicksand, sans-serif"}
-                  fontWeight={600}
-                  color={"gray.500"}
                   display={"flex"}
-                  align={"center"}
-                  gap={2}
+                  gap={1}
+                  alignItems={"center"}
+                  fontSize={14}
+                  color={"#000"}
+                  fontWeight={700}
                 >
-                  <FaUserAlt fontSize={12} />{" "}
-                  <Text mt={-0.5}>
-                    {data.total_appointment_done} Appointments Done
+                  {data.ex_year}+ Years Of Experience
+                </Text>
+                <Text
+                  as={"span"}
+                  display={"flex"}
+                  gap={1}
+                  alignItems={"center"}
+                >
+                  <RatingStars rating={data.average_rating} />{" "}
+                  <Text
+                    as={"span"}
+                    mb={0}
+                    color={"#000"}
+                    fontSize={"xs"}
+                    fontWeight={600}
+                  >
+                    {parseFloat(data.average_rating).toFixed(1)} (
+                    {data.number_of_reviews})
                   </Text>
                 </Text>
-              </Flex>
-              <Divider my={2} />
-              <Text
-                mt={"2px"}
-                fontSize={{
-                  base: "13px",
-                  md: "13px",
-                  lg: "13px",
-                }}
-                fontWeight={500}
-                m={0}
-                color={"gray.600"}
-                display={"flex"}
-                align={"center"}
-                gap={2}
-                letterSpacing={1}
-              >
-                <Text
-                  as={"span"}
-                  m={0}
-                  className="ion-android-call"
-                  color={"#000"}
-                ></Text>{" "}
-                {data.isd_code} {data.phone}
-              </Text>
-              <Text
-                fontSize={{
-                  base: "13px",
-                  md: "13px",
-                  lg: "13px",
-                }}
-                fontWeight={500}
-                m={0}
-                color={"gray.600"}
-                display={"flex"}
-                align={"center"}
-                gap={2}
-                letterSpacing={1}
-                mt={2}
-              >
-                <Text
-                  as={"span"}
-                  className="ion-ios-email"
-                  fontSize={16}
-                  color={"#000"}
-                ></Text>{" "}
-                {data.email}
-              </Text>
+                <Flex justify={"space-between"} mt={1}>
+                  <Text
+                    fontSize={12}
+                    fontFamily={"Quicksand, sans-serif"}
+                    fontWeight={600}
+                    color={"gray.500"}
+                    display={"flex"}
+                    align={"center"}
+                    gap={2}
+                  >
+                    <FaUserAlt fontSize={12} />{" "}
+                    <Text mt={-0.5}>
+                      {data.total_appointment_done} Appointments Done
+                    </Text>
+                  </Text>
+                </Flex>
+              </Box>
+            </Flex>
+            <HStack spacing={1}>
+              <IconButton
+                cursor={"pointer"}
+                as="Link"
+                href={data.insta_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                icon={<FaInstagram />}
+                variant="ghost"
+                colorScheme="pink"
+              />{" "}
+              <IconButton
+                cursor={"pointer"}
+                as="Link"
+                href={data.fb_linik}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                icon={<FaFacebook />}
+                variant="ghost"
+                colorScheme="facebook"
+              />
+              <IconButton
+                cursor={"pointer"}
+                as="Link"
+                href={data.twitter_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                icon={<FaTwitter />}
+                variant="ghost"
+                colorScheme="twitter"
+              />{" "}
+              <IconButton
+                cursor={"pointer"}
+                as="Link"
+                href={data.you_tube_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                icon={<FaYoutube />}
+                variant="ghost"
+                colorScheme="red"
+              />
+            </HStack>
+            <Divider my={2} />
+            <Box>
+              <VStack align="start" spacing={2}>
+                {/* Clinic Address */}
+                <Link
+                  isExternal
+                  display="flex"
+                  alignItems="center"
+                  color="gray.800"
+                  fontWeight="600"
+                  fontSize="sm"
+                  _hover={{ color: "gray.500", textDecoration: "underline" }}
+                >
+                  <ImLocation style={{ marginRight: "6px" }} />
+                  <Text>{data.address || "Doctor Address"}</Text>
+                </Link>
+
+                {/* Email */}
+                <Link
+                  href={`mailto:${data.email}`}
+                  isExternal
+                  display="flex"
+                  alignItems="center"
+                  color="gray.800"
+                  fontWeight="600"
+                  fontSize="sm"
+                  _hover={{ color: "gray.500", textDecoration: "underline" }}
+                >
+                  <EmailIcon mr={2} />
+                  {data.email}
+                </Link>
+
+                {/* Phone */}
+                <Link
+                  href={`tel:${data.isd_code}${data.phone}`}
+                  isExternal
+                  display="flex"
+                  alignItems="center"
+                  color="gray.800"
+                  fontWeight="600"
+                  fontSize="sm"
+                  _hover={{ color: "gray.900", textDecoration: "underline" }}
+                >
+                  <PhoneIcon mr={2} />
+                  {data.isd_code} {data.phone}
+                </Link>
+              </VStack>
+            </Box>
+            {/* images */}
+
+            {/* booking */}
+            <Box>
+              {" "}
               {data?.stop_booking === 1 ||
                 stopBooking.value === true ||
                 (stopBooking.value === "true" && (
@@ -285,8 +340,9 @@ export default function Doctor() {
                 onClick={() => {
                   if (user) {
                     setdoctor(data);
+                    setopen(!open);
                   } else {
-                    onOpen();
+                    navigate("/login");
                   }
                 }}
                 isDisabled={
@@ -298,7 +354,7 @@ export default function Doctor() {
                 Make Appointment
               </Button>
               <AnimatePresence>
-                {doctor && (
+                {open && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -379,151 +435,9 @@ export default function Doctor() {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <Divider my={3} />
-              <HStack spacing={2}>
-                <IconButton
-                  as="a"
-                  href={data.insta_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  icon={<FaInstagram />}
-                  variant="ghost"
-                  colorScheme="pink"
-                />{" "}
-                <IconButton
-                  as="a"
-                  href={data.fb_linik}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  icon={<FaFacebook />}
-                  variant="ghost"
-                  colorScheme="facebook"
-                />
-                <IconButton
-                  as="a"
-                  href={data.twitter_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  icon={<FaTwitter />}
-                  variant="ghost"
-                  colorScheme="twitter"
-                />{" "}
-                <IconButton
-                  as="a"
-                  href={data.you_tube_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="YouTube"
-                  icon={<FaYoutube />}
-                  variant="ghost"
-                  colorScheme="red"
-                />
-              </HStack>
             </Box>
-          </Box>
-          <Box
-            backgroundColor={"#FFF"}
-            borderRadius={10}
-            cursor={"pointer"}
-            boxShadow={"2px 2px 20px 0 rgb(82 66 47 / 12%)"}
-            w={{ base: "100%", md: "60%" }}
-            p={4}
-          >
-            <Text
-              fontSize={24}
-              fontWeight={800}
-              fontFamily={"Roboto, sans-serif"}
-            >
-              {data.f_name} {data.l_name}
-            </Text>
-            <Text
-              fontSize={14}
-              textAlign={"justify"}
-              mt={4}
-              fontFamily={"Quicksand, sans-serif"}
-              color={"gray.600"}
-            >
-              {data.description ? data.description : ""}
-            </Text>
-            <Divider my={3} />
-            <Flex align={"center"}>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"primary.text"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                Department
-              </Text>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"gray.900"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                {data.department_name}
-              </Text>
-            </Flex>
-            <Divider my={3} />
-            <Flex align={"center"}>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"primary.text"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                Specialization
-              </Text>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"gray.900"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                {data.specialization}
-              </Text>
-            </Flex>
-            <Divider my={3} />
-            <Flex align={"center"}>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"primary.text"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                Experience
-              </Text>
-              <Text
-                mt={"2px"}
-                fontSize={16}
-                fontWeight={700}
-                m={0}
-                color={"gray.900"}
-                fontFamily={"Quicksand, sans-serif"}
-                w={"50%"}
-              >
-                {data.ex_year}+ Years
-              </Text>
-            </Flex>
-            <Divider my={3} />
+            {/* divider */}
+            <Divider my={4} />
             <DoctorReviews id={id} />
           </Box>
         </Flex>

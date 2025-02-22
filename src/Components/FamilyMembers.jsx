@@ -278,9 +278,9 @@ function FamilyMembers() {
                             <Card
                               cursor={"pointer"}
                               mb={4}
-                              onClick={() => {
-                                navigate(`/family-member/${member.id}`);
-                              }}
+                              // onClick={() => {
+                              //   navigate(`/family-member/${member.id}`);
+                              // }}
                             >
                               <CardBody p={4}>
                                 <Flex

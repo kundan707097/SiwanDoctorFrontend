@@ -101,7 +101,7 @@ export default function HomePage() {
                     bg: "#fff",
                   }}
                   as={Link}
-                  to={"/book-appointment"}
+                  to={"/doctors"}
                 >
                   Get Appointment
                 </Button>
@@ -150,7 +150,7 @@ export default function HomePage() {
                     bg: "#000",
                   }}
                   as={Link}
-                  to={"/book-appointment"}
+                  to={"/doctors"}
                 >
                   Make Appointment
                 </Button>
@@ -279,7 +279,7 @@ export default function HomePage() {
                 size={"sm"}
                 leftIcon={<BiCalendar />}
                 as={Link}
-                to={"/book-appointment"}
+                to={"/doctors"}
               >
                 Make Appointment
               </Button>

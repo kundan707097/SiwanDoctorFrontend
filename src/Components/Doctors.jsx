@@ -110,8 +110,8 @@ export default function Doctors() {
                       <Image
                         src={
                           item.image
-                            ? `${imageBaseURL}/${item.image}`
-                            : "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fGRvY3RvcnxlbnwwfHwwfHx8MA%3D%3D"
+                            ? `${item.image}`
+                            : "user.png"
                         }
                         w={{ base: "300px", md: "250px" }}
                       />

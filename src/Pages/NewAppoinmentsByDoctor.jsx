@@ -29,7 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ADD, GET } from "../Controllers/ApiControllers";
+import { ADD2 as ADD, GET2 as GET } from "../Controllers/ApiControllers2";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../Components/Loading";
 import { AnimatePresence, motion } from "framer-motion";
@@ -113,8 +113,7 @@ function NewAppoinmentsByDoctor() {
 
   const getData = async () => {
     const res = await GET(`get_doctor/${doctor}`);
-
-    return res.data;
+    return res.data[0];
   };
   const { isLoading: doctorLoading, data: Doctordetails } = useQuery({
     queryKey: ["Doctor", doctor],
@@ -336,26 +335,31 @@ const Step2 = ({
   const getData = async () => {
     const url =
       appoinmentType.title === "OPD"
-        ? `get_doctor_time_interval/${Doctordetails.user_id}/${getDayName(
+        ? `get_doctor_time_interval/${Doctordetails?.id}/${getDayName(
             selectedDate
           )}`
         : appoinmentType.title === "Video Consultant"
-        ? `get_doctor_video_time_interval/${Doctordetails.user_id}/${getDayName(
+        ? `get_doctor_video_time_interval/${Doctordetails?.id}/${getDayName(
             selectedDate
           )}`
-        : `get_doctor_time_interval/${Doctordetails.user_id}/${getDayName(
+        : `get_doctor_time_interval/${Doctordetails?.id}/${getDayName(
             selectedDate
           )}`;
-    const res = await GET(url);
 
-    return res.data;
+    try {
+      const res = await GET(url);
+
+      return res.data;
+    } catch (error) {
+      return [];
+    }
   };
 
   const { isLoading: timeSlotesLoading, data: timeSlots } = useQuery({
     queryKey: [
       "timeslotes",
       selectedDate,
-      Doctordetails.user_id,
+      Doctordetails?.id,
       appoinmentType.title,
     ],
     queryFn: getData,
@@ -385,15 +389,17 @@ const Step2 = ({
   // get doctors booked slotes
   const getBookedSlotes = async () => {
     const res = await GET(
-      `get_booked_time_slots?doct_id=${Doctordetails.user_id}&date=${moment(
-        selectedDate
-      ).format("YYYY-MM-DD")}&type=${appoinmentType.title}`
+      `Get_Booked_time_Slot_By_DoctId?doct_id=${
+        Doctordetails?.id
+      }&date=${moment(selectedDate).format("YYYY-MM-DD")}&type=${
+        appoinmentType.title
+      }`
     );
     return res.data;
   };
 
   const { isLoading: bookedSlotesLoading, data: bookedSlotes } = useQuery({
-    queryKey: ["bookedslotes", selectedDate, Doctordetails.user_id],
+    queryKey: ["bookedslotes", selectedDate, Doctordetails?.id],
     queryFn: getBookedSlotes,
     enabled: !!selectedDate,
   });
@@ -909,7 +915,6 @@ const Step4 = ({
       };
       setisLoading(true);
       let res = await ADD(user.token, "get_validate", data);
-
       setisLoading(false);
       if (res.response === 200) {
         if (res.status === false) {
@@ -974,7 +979,7 @@ const Step4 = ({
     try {
       setisLoading(true);
       let res = await ADD(user.token, "add_appointment", appointmentDetails);
-
+      console.log(res);
       setisLoading(false);
       if (res.response === 200) {
         showToast(toast, "success", "Appointment Booked Successfully!");
@@ -996,7 +1001,7 @@ const Step4 = ({
   };
 
   const paymentData = {
-    family_member_id: String(patientDetails.id), // Ensure this is a string
+    family_member_id: String(patientDetails?.id), // Ensure this is a string
     status: "Confirmed",
     date: selectedDate ? selectedDate : moment().format("YYYY-MM-DD"),
     time_slots: selectedSlot
@@ -1043,7 +1048,7 @@ const Step4 = ({
         SelectedCoupon?.value
       ).toFixed(2)
     ), // Ensure string and formatted
-    name: `${patientDetails.f_name} ${patientDetails.l_name}`,
+    name: `${patientDetails?.f_name} ${patientDetails?.l_name}`,
     desc: "Appointment",
   };
 
@@ -1058,10 +1063,10 @@ const Step4 = ({
   };
 
   // payment data
-
   if (isLoading || isUserLoading || bookedSlotesLoading) {
     return <Loading />;
   }
+
   return (
     <Box>
       <Flex justify={"center"} mb={2}>
@@ -1111,7 +1116,7 @@ const Step4 = ({
             textAlign={"center"}
             color={"gray.600"}
           >
-            {patientDetails.f_name} {patientDetails.l_name}
+            {patientDetails?.f_name} {patientDetails?.l_name}
           </Text>{" "}
         </Flex>
         <Flex justify={"space-between"} mb={1}>

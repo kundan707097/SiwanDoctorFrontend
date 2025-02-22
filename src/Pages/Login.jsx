@@ -1,18 +1,24 @@
-﻿import {
+﻿/* eslint-disable react/prop-types */
+import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Heading,
   HStack,
+  Icon,
   Input,
   InputGroup,
   InputLeftAddon,
+  InputRightElement,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Text,
+  useBoolean,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -22,9 +28,10 @@ import showToast from "../Controllers/ShowToast";
 import { ADD2 as ADD } from "../Controllers/ApiControllers2";
 import { useNavigate } from "react-router-dom";
 import defaultISD from "../Controllers/defaultISD";
-import { initiate, verify, oauth } from "../Utils/initOtpless";
+import { initiate, verify } from "../Utils/initOtpless";
 import { PinInput, PinInputField } from "@chakra-ui/react";
-import { FaWhatsapp } from "react-icons/fa";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useForm } from "react-hook-form";
 
 const Login = () => {
   const [step, setStep] = useState(1);
@@ -35,7 +42,6 @@ const Login = () => {
   const toast = useToast();
   const [OTP, setOTP] = useState("");
   const navigate = useNavigate();
-  const [LoginAs, setLoginAs] = useState("2");
   const [timer, setTimer] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
 
@@ -210,17 +216,22 @@ const Login = () => {
             </Text>
           </Box>
           <Box width={["100%", "100%", "50%", "50%"]} p={4}>
-            <Tabs
-              variant="soft-rounded"
-              colorScheme="orange"
-              onChange={(index) => setLoginAs(index === 0 ? "2" : "1")}
-            >
+            <Tabs variant="soft-rounded" colorScheme="orange">
               <TabList justifyContent="center" p="4">
                 <Tab>Login as Patient</Tab>
-                <Tab isDisabled>Login as Doctor</Tab>
+                <Tab>Login as Doctor</Tab>
               </TabList>
               <TabPanels w={"100%"}>
                 <TabPanel>{renderStep()}</TabPanel>
+                <TabPanel>
+                  <LoginDoctor
+                    isd_code={isd_code}
+                    phoneNumber={phoneNumber}
+                    setphoneNumber={setphoneNumber}
+                    onOpen={onOpen}
+                    toast={toast}
+                  />
+                </TabPanel>
               </TabPanels>
             </Tabs>
           </Box>
@@ -242,39 +253,7 @@ const step1 = ({
   setphoneNumber,
   handleSubmit,
   isLoading,
-  toast,
 }) => {
-  const handleWhatsAppAuth = async () => {
-    try {
-      const result = await oauth("WHATSAPP");
-
-      if (!result.success) {
-        toast({
-          title: "Authentication Failed",
-          description: result.response.errorMessage,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-        return;
-      }
-
-      console.log(result);
-      setphoneNumber();
-    } catch (error) {
-      console.error("WhatsApp Auth Error:", error);
-      toast({
-        title: "Unexpected Error",
-        description: "Something went wrong. Please try again later.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-  };
-
   return (
     <Box>
       <Text fontSize="md" mb="2" fontWeight={600}>
@@ -385,6 +364,149 @@ const step2 = ({
         }}
       >
         Use Diffrent Phone Number
+      </Button>
+    </Box>
+  );
+};
+
+const LoginDoctor = ({ onOpen, isd_code, toast }) => {
+  const [showPassword, setShowPassword] = useBoolean(false);
+  const [isLoading, setisLoading] = useState(false);
+  const navigate = useNavigate();
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      phoneNumber: "",
+      password: "",
+    },
+  });
+
+  const ConfirmLogin = async (data) => {
+    try {
+      let formData = {
+        emailOrPhoneNumber: data.phoneNumber,
+        password: data.password,
+      };
+      const res = await ADD("", "login", formData, "application/json");
+      console.log(res);
+      if (res.status === true) {
+        setisLoading(false);
+        const user = { ...res.data, token: res.token };
+
+        const hasPatientRole = user.role.some(
+          (r) => r.name.toLowerCase() === "doctor"
+        );
+
+        if (!hasPatientRole) {
+          showToast(
+            toast,
+            "error",
+            "Your account is not registered as a doctor."
+          );
+          return;
+        }
+
+        localStorage.setItem("admin", JSON.stringify(user));
+        showToast(
+          toast,
+          "success",
+          `Welcome Doctor ${user.f_name} ${user.l_name}`
+        );
+        setTimeout(() => {
+          navigate("/admin", { replace: true });
+          window.location.reload();
+        }, 2000);
+      }
+    } catch (error) {
+      showToast(toast, "error", error.message);
+      setisLoading(false);
+    }
+  };
+
+  // Form submission handler
+  const onSubmit = (data) => {
+    setisLoading(true);
+    ConfirmLogin(data);
+  };
+
+  return (
+    <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+      <Text fontSize="md" mb="2" fontWeight={600}>
+        Mobile number
+      </Text>
+      <InputGroup size="md">
+        <InputLeftAddon
+          cursor="pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+        >
+          {isd_code}
+        </InputLeftAddon>
+        <Input
+          type="tel"
+          {...register("phoneNumber", {
+            required: "Phone number is required",
+            pattern: {
+              value: /^[0-9]{10}$/, // Example: 10-digit phone number validation
+              message: "Please enter a valid 10-digit phone number",
+            },
+          })}
+          placeholder="Enter phone number"
+        />
+      </InputGroup>
+      {errors.phoneNumber && (
+        <Text color="red.500" fontSize="sm" mt={1}>
+          {errors.phoneNumber.message}
+        </Text>
+      )}
+
+      <FormControl mt={4} isInvalid={!!errors.password}>
+        <FormLabel>Password</FormLabel>
+        <InputGroup>
+          <Input
+            type={showPassword ? "text" : "password"}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+            placeholder="Enter password"
+          />
+          <InputRightElement>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={setShowPassword.toggle}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              <Icon as={showPassword ? ViewOffIcon : ViewIcon} />
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+        {errors.password && (
+          <Text color="red.500" fontSize="sm" mt={1}>
+            {errors.password.message}
+          </Text>
+        )}
+      </FormControl>
+
+      <Button
+        colorScheme="orange"
+        width="100%"
+        mb="4"
+        mt={4}
+        type="submit"
+        isLoading={isLoading}
+      >
+        Login Doctor
       </Button>
     </Box>
   );

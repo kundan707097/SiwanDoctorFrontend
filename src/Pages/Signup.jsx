@@ -312,22 +312,6 @@ const Signup = () => {
                 </InputGroup>
                 <FormErrorMessage>{errors.phone?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={errors.email} mb="4">
-                <Text fontSize="md" mb="2" fontWeight={600}>
-                  Email Address
-                </Text>
-                <Input
-                  type="email"
-                  {...register("email", {
-                    required: false,
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                />
-                <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-              </FormControl>
 
               {/* Gender */}
               <FormControl isInvalid={errors.gender} mb="4" isRequired>
@@ -349,22 +333,26 @@ const Signup = () => {
                 />
                 <FormErrorMessage>{errors.gender?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={errors.password} mb="4">
-                <Text fontSize="md" mb="2" fontWeight={600}>
-                  Password
-                </Text>
-                <Input
-                  type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters long",
-                    },
-                  })}
-                />
-                <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-              </FormControl>
+              {userType === "1" ? (
+                <FormControl isInvalid={errors.password} mb="4">
+                  <Text fontSize="md" mb="2" fontWeight={600}>
+                    Password
+                  </Text>
+                  <Input
+                    type="password"
+                    {...register("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 8,
+                        message: "Password must be at least 8 characters long",
+                      },
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.password?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              ) : null}
 
               {/* Email */}
 
@@ -412,14 +400,12 @@ const Signup = () => {
                 <RadioGroup
                   defaultValue={userType}
                   onChange={(e) => {
-                    setuserType(e.target.value);
+                    setuserType(e);
                   }}
                 >
                   <Stack spacing={4} direction="row">
                     <Radio value={"2"}>Patient</Radio>
-                    <Radio value={"1"} isDisabled>
-                      Doctor
-                    </Radio>
+                    <Radio value={"1"}>Doctor</Radio>
                   </Stack>
                 </RadioGroup>
               </FormControl>
