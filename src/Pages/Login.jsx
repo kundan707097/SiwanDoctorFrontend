@@ -348,6 +348,7 @@ const step2 = ({
         colorScheme="orange"
         isDisabled={isResendDisabled}
         onClick={handleResendOtp}
+        isLoading={isLoading}
       >
         Resend OTP {timer !== 0 && `(${timer} s)`}
       </Button>

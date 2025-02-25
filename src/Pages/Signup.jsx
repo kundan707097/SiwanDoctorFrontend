@@ -333,7 +333,7 @@ const Signup = () => {
                 />
                 <FormErrorMessage>{errors.gender?.message}</FormErrorMessage>
               </FormControl>
-              {userType === "1" ? (
+              
                 <FormControl isInvalid={errors.password} mb="4">
                   <Text fontSize="md" mb="2" fontWeight={600}>
                     Password
@@ -352,7 +352,7 @@ const Signup = () => {
                     {errors.password?.message}
                   </FormErrorMessage>
                 </FormControl>
-              ) : null}
+          
 
               {/* Email */}
 
