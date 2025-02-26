@@ -71,7 +71,7 @@ const Login = () => {
 
     if (OTP === 310719 || OTP === "310719") {
       setisLoading(true);
-      ConfirmLogin();
+      await ConfirmLogin();
       setisLoading(false);
     } else {
       setisLoading(true);
@@ -102,10 +102,10 @@ const Login = () => {
   };
 
   const ConfirmLogin = async () => {
+    setisLoading(true);
     try {
       let data = { phone: phoneNumber };
       const res = await ADD("", "login_phone", data, "multipart/form-data");
-
       if (res.status === true) {
         setisLoading(false);
         const user = { ...res.data, token: res.token };
@@ -130,6 +130,8 @@ const Login = () => {
       }
     } catch (error) {
       showToast(toast, "error", error.message);
+      setisLoading(false);
+    } finally {
       setisLoading(false);
     }
   };

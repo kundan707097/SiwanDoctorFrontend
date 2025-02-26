@@ -363,7 +363,7 @@ const AddNew = ({ onClose, isOpen, selectedMember }) => {
   const onSubmit = (data) => {
     let formData = {
       ...data,
-      user_id: user.id,
+      user_id: user?.id,
       family_member_id: selectedMember.id,
       type: "Blood Pressure",
     };

@@ -207,8 +207,12 @@ const Appointments = () => {
   const [currentStep, setCurrentStep] = useState(1);
 
   const getData = async () => {
-    const res = await GET(`get_appointment/user/${user.id}`);
-    return res.data;
+    try {
+      const res = await GET(`get_appointment/user/${user.id}`);
+      return res.data;
+    } catch (error) {
+      return [];
+    }
   };
 
   const { isLoading, data, error } = useQuery({
@@ -220,7 +224,7 @@ const Appointments = () => {
     const today = new Date();
 
     return appointments
-      .filter((appointment) => {
+      ?.filter((appointment) => {
         const appointmentDate = new Date(appointment.date);
 
         switch (filter) {
@@ -290,7 +294,7 @@ const Appointments = () => {
                   size={"sm"}
                   leftIcon={<BiCalendar />}
                   as={Link}
-                  to={"/book-appointment"}
+                  to={"/doctors"}
                 >
                   Make Appointment
                 </Button>
