@@ -10,7 +10,7 @@ import {
   Divider,
   Button,
 } from "@chakra-ui/react";
-import { GET } from "../Controllers/ApiControllers";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Components/Loading";

@@ -28,7 +28,7 @@ import { ADD2 as ADD } from "../Controllers/ApiControllers2";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import defaultISD from "../Controllers/defaultISD";
-import { initiate, verify, oauth } from "../Utils/initOtpless";
+import { initiate, verify } from "../Utils/initOtpless";
 
 const Signup = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

@@ -333,6 +333,7 @@ const Step2 = ({
 
   // get doctors time slote
   const getData = async () => {
+    console.log(Doctordetails);
     const url =
       appoinmentType.title === "OPD"
         ? `get_doctor_time_interval/${Doctordetails?.id}/${getDayName(
@@ -934,7 +935,7 @@ const Step4 = ({
 
   const addAppointment = async () => {
     const appointmentDetails = {
-      family_member_id: patientDetails.id,
+      patient_id: patientDetails.id,
       status: "Confirmed",
       date: selectedDate ? selectedDate : moment().format("YYYY-MM-DD"),
       time_slots: selectedSlot
@@ -1001,7 +1002,7 @@ const Step4 = ({
   };
 
   const paymentData = {
-    family_member_id: String(patientDetails?.id), // Ensure this is a string
+    patient_id: String(patientDetails?.id), // Ensure this is a string
     status: "Confirmed",
     date: selectedDate ? selectedDate : moment().format("YYYY-MM-DD"),
     time_slots: selectedSlot

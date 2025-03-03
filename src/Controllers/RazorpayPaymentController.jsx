@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import { keyId, keySecret } from "./RazorpaySecret";
-import { ADD } from "./ApiControllers";
+import { ADD2 as ADD } from "./ApiControllers2";
 import user from "./user";
 import showToast from "./ShowToast";
 import currency_name from "./CurrName";

@@ -11,9 +11,7 @@ import {
   InputLeftElement,
   useColorModeValue,
   Divider,
-  Select,
-  Textarea,
-  useToast,
+  Select, useToast
 } from "@chakra-ui/react";
 import { BsPerson, BsEnvelope, BsPhone } from "react-icons/bs";
 import { useForm } from "react-hook-form";
@@ -35,6 +33,7 @@ const getData = async () => {
 
 const handleUpdate = async (data) => {
   const res = await ADD(user.token, "update_user", data);
+  console.log(res)
   if (res.response !== 200) {
     throw new Error(res.message);
   }

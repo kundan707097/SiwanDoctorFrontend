@@ -208,7 +208,7 @@ const Appointments = () => {
 
   const getData = async () => {
     try {
-      const res = await GET(`get_appointment/user/${user.id}`);
+      const res = await GET(`user/${user.id}`);
       return res.data;
     } catch (error) {
       return [];

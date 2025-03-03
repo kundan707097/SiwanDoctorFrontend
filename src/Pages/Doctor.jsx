@@ -401,7 +401,7 @@ export default function Doctor() {
                                 appointmentType?.id === fee?.id ? null : fee
                               );
                               navigate(
-                                `/book-appointment/${doctor.user_id}/${fee.id}`
+                                `/book-appointment/${doctor.id}/${fee.id}`
                               );
                             }}
                           >

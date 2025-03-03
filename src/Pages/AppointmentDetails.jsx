@@ -39,7 +39,7 @@ import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../Components/Loading";
-import { ADD, GET } from "../Controllers/ApiControllers";
+import { ADD2 as ADD, GET2 as GET } from "../Controllers/ApiControllers2";
 import imageBaseURL from "../Controllers/image";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useRef } from "react";
@@ -85,82 +85,84 @@ const AppointmentDetails = () => {
     onClose: ratingOnClose,
   } = useDisclosure();
   const cancelRef = useRef();
+
   const getData = async () => {
     const res = await GET(`get_appointment/${id}`);
     return res.data;
   };
   // req history
-  const getReqData = async () => {
-    const res = await GET(`get_appointment_cancel_req/appointment/${id}`);
-    return res.data;
-  };
-  const getInvoices = async () => {
-    const res = await GET(`get_invoice/appointment/${id}`);
-    return res.data;
-  };
-  const getPrescription = async () => {
-    const res = await GET(`get_prescription/appointment/${id}`);
-    return res.data;
-  };
-  const getQueueNumber = async () => {
-    const res = await GET(
-      `get_appointment_check_in_doct_date/${appointmentData?.doct_id}/${appointmentData?.date}`
-    );
-    return res.data;
-  };
-  const getPatientFiles = async () => {
-    const res = await GET(
-      `get_patient_file/patient/${appointmentData?.patient_id}`
-    );
-    return res.data;
-  };
+  // const getReqData = async () => {
+  //   const res = await GET(`get_appointment_cancel_req/appointment/${id}`);
+  //   return res.data;
+  // };
+  // const getInvoices = async () => {
+  //   const res = await GET(`get_invoice/appointment/${id}`);
+  //   return res.data;
+  // };
+  // const getPrescription = async () => {
+  //   const res = await GET(`get_prescription/appointment/${id}`);
+  //   return res.data;
+  // };
+  // const getQueueNumber = async () => {
+  //   const res = await GET(
+  //     `get_appointment_check_in_doct_date/${appointmentData?.doct_id}/${appointmentData?.date}`
+  //   );
+  //   return res.data;
+  // };
+  // const getPatientFiles = async () => {
+  //   const res = await GET(
+  //     `get_patient_file/patient/${appointmentData?.patient_id}`
+  //   );
+  //   return res.data;
+  // };
 
   const { isLoading, data: appointmentData } = useQuery({
     queryKey: ["appointment", id],
     queryFn: getData,
   });
-  const { isLoading: reqHistoryLoading, data: reqHistoryData } = useQuery({
-    queryKey: ["appointment-req-history", id],
-    queryFn: getReqData,
-  });
-  const { isLoading: invoiceLoading, data: invoiceData } = useQuery({
-    queryKey: ["invoice", id],
-    queryFn: getInvoices,
-  });
-  const { isLoading: prescriptionLoading, data: prescriptionData } = useQuery({
-    queryKey: ["prescription", id],
-    queryFn: getPrescription,
-  });
-  const {
-    isFetching: queueIsFetching, // This is true even during refetching
-    data: queueData,
-    refetch,
-  } = useQuery({
-    queryKey: ["queue", appointmentData?.doct_id, appointmentData?.date],
-    queryFn: getQueueNumber,
-    enabled: !!appointmentData,
-  });
+  // const { isLoading: reqHistoryLoading, data: reqHistoryData } = useQuery({
+  //   queryKey: ["appointment-req-history", id],
+  //   queryFn: getReqData,
+  // });
+  // const { isLoading: invoiceLoading, data: invoiceData } = useQuery({
+  //   queryKey: ["invoice", id],
+  //   queryFn: getInvoices,
+  // });
+  // const { isLoading: prescriptionLoading, data: prescriptionData } = useQuery({
+  //   queryKey: ["prescription", id],
+  //   queryFn: getPrescription,
+  // });
+  // const {
+  //   isFetching: queueIsFetching, // This is true even during refetching
+  //   data: queueData,
+  //   refetch,
+  // } = useQuery({
+  //   queryKey: ["queue", appointmentData?.doct_id, appointmentData?.date],
+  //   queryFn: getQueueNumber,
+  //   enabled: !!appointmentData,
+  // });
 
-  const { isLoading: patientFilesLoading, data: patientFilesData } = useQuery({
-    queryKey: ["patient-files", appointmentData?.patient_id],
-    queryFn: getPatientFiles,
-    enabled: !!appointmentData,
-  });
+  // const { isLoading: patientFilesLoading, data: patientFilesData } = useQuery({
+  //   queryKey: ["patient-files", appointmentData?.patient_id],
+  //   queryFn: getPatientFiles,
+  //   enabled: !!appointmentData,
+  // });
 
   // get request history
 
   const { month, date, year } = formatDate(appointmentData?.date);
-  const queueNumb = queueData?.findIndex((queue) => {
-    return queue?.appointment_id == id;
-  });
+  // const queueNumb = queueData?.findIndex((queue) => {
+  //   return queue?.appointment_id == id;
+  // });
 
   if (
-    isLoading ||
-    reqHistoryLoading ||
-    invoiceLoading ||
-    prescriptionLoading ||
-    queueIsFetching ||
-    patientFilesLoading
+    isLoading 
+    // ||
+    // reqHistoryLoading ||
+    // invoiceLoading ||
+    // prescriptionLoading ||
+    // queueIsFetching ||
+    // patientFilesLoading
   )
     return <Loading />;
   return (
@@ -258,7 +260,7 @@ const AppointmentDetails = () => {
             ) : (
               <Divider />
             )}
-            {appointmentData.type === "OPD" &&
+            {/* {appointmentData.type === "OPD" &&
             appointmentData?.status === "Confirmed" ? (
               queueNumb >= 0 ? (
                 <Button
@@ -301,7 +303,7 @@ const AppointmentDetails = () => {
                   Check-In
                 </Button>
               )
-            ) : null}
+            ) : null} */}
 
             <Flex align={"center"} justify={"space-between"} mt={5}>
               {" "}
@@ -389,7 +391,7 @@ const AppointmentDetails = () => {
                 {" "}
                 <Text fontWeight="bold">Prescriptions - </Text>
               </Flex>
-              {prescriptionData.length ? (
+              {/* {prescriptionData.length ? (
                 prescriptionData?.map((item, index) => (
                   <Button
                     key={item.id}
@@ -415,7 +417,7 @@ const AppointmentDetails = () => {
                   <AlertIcon />
                   Prescriptions Not Found!
                 </Alert>
-              )}
+              )} */}
             </Box>
             <Divider my={2} mt={5} />
             <Box mt={5}>
@@ -424,7 +426,7 @@ const AppointmentDetails = () => {
                 <Text fontWeight="bold">Patient Files - </Text>
               </Flex>
 
-              {patientFilesData.length ? (
+              {/* {patientFilesData.length ? (
                 <AnimatePresence>
                   {patientFilesData?.map((file) => (
                     <motion.div
@@ -478,7 +480,7 @@ const AppointmentDetails = () => {
                   <AlertIcon />
                   Prescriptions Not Found!
                 </Alert>
-              )}
+              )} */}
             </Box>
             <Divider my={2} mt={5} />
             <Box mt={5}>
@@ -493,7 +495,7 @@ const AppointmentDetails = () => {
               <Text color={"gray.600"} fontSize={"sm"} fontWeight={600}>
                 Payment Id #{appointmentData.id}
               </Text>
-              {invoiceData ? (
+              {/* {invoiceData ? (
                 <Button
                   variant="link"
                   colorScheme="green"
@@ -504,7 +506,7 @@ const AppointmentDetails = () => {
                 >
                   Download Invoice
                 </Button>
-              ) : null}
+              ) : null} */}
             </Box>
             <Contact doctID={appointmentData?.doct_id} />
             <Box mt={5}>
@@ -583,9 +585,9 @@ const AppointmentDetails = () => {
                     <Text fontSize={"sm"} fontWeight={600} mb={2}>
                       Request History
                     </Text>
-                    {reqHistoryData?.map((item) => (
+                    {/* {reqHistoryData?.map((item) => (
                       <ReqHistory key={item.id} item={item} />
-                    ))}
+                    ))} */}
                   </Box>
                 )}
               </Box>

@@ -1,7 +1,9 @@
 ﻿/* eslint-disable react/prop-types */
 import {
+  AbsoluteCenter,
   Box,
   Button,
+  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -37,13 +39,56 @@ const Login = () => {
   const [step, setStep] = useState(1);
   const [isd_code, setIsd_code] = useState(defaultISD);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [phoneNumber, setphoneNumber] = useState("");
+  const [phoneNumber, setphoneNumber] = useState();
+  const [password, setPassword] = useState();
   const [isLoading, setisLoading] = useState(false);
   const toast = useToast();
   const [OTP, setOTP] = useState("");
   const navigate = useNavigate();
   const [timer, setTimer] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
+
+  // login with passord
+  const handleLoginWithPassword = async () => {
+    if (!phoneNumber) {
+      showToast(toast, "error", "Please enter phone number");
+      return;
+    }
+    if (!password) {
+      showToast(toast, "error", "Please enter password");
+      return;
+    }
+    setisLoading(true);
+    try {
+      let data = { emailOrPhoneNumber: phoneNumber, password: password };
+      const res = await ADD("", "login", data, "application/json");
+      if (res.status === true) {
+        setisLoading(false);
+        const user = { ...res.data, token: res.token };
+        const hasPatientRole = user.role.some(
+          (r) => r.name.toLowerCase() === "patient" || r.role_id === 1
+        );
+        if (!hasPatientRole) {
+          showToast(
+            toast,
+            "error",
+            "Your account is not registered as a patient."
+          );
+          return;
+        }
+
+        localStorage.setItem("user", JSON.stringify(user));
+        showToast(toast, "success", `Welcome ${user.f_name} ${user.l_name}`);
+        navigate("/", { replace: true });
+        window.location.reload();
+      }
+    } catch (error) {
+      showToast(toast, "error", error.message);
+      setisLoading(false);
+    } finally {
+      setisLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!phoneNumber) {
@@ -168,6 +213,9 @@ const Login = () => {
           handleSubmit,
           isLoading,
           toast,
+          setPassword,
+          password,
+          handleLoginWithPassword,
         })
       : step2({
           phoneNumber,
@@ -255,6 +303,9 @@ const step1 = ({
   setphoneNumber,
   handleSubmit,
   isLoading,
+  password,
+  setPassword,
+  handleLoginWithPassword,
 }) => {
   return (
     <Box>
@@ -278,8 +329,36 @@ const step1 = ({
           onChange={(e) => setphoneNumber(e.target.value)}
         />
       </InputGroup>
+
+      <FormControl mb="4">
+        <Text fontSize="md" mb="2" fontWeight={600}>
+          Password
+        </Text>
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
+      </FormControl>
       <Button
         colorScheme="orange"
+        width="100%"
+        mb="4"
+        onClick={handleLoginWithPassword}
+        isLoading={isLoading}
+      >
+        Login
+      </Button>
+      <Box position="relative" py={2} mb={2}>
+        <Divider />
+        <AbsoluteCenter bg="white" px="4">
+          Or
+        </AbsoluteCenter>
+      </Box>
+      <Button
+        colorScheme="purple"
         width="100%"
         mb="4"
         onClick={handleSubmit}
@@ -287,17 +366,6 @@ const step1 = ({
       >
         Request OTP
       </Button>
-      {/* 
-      <Button
-        leftIcon={<FaWhatsapp />}
-        colorScheme="green"
-        variant="solid"
-        width="100%"
-        size="md"
-        onClick={handleWhatsAppAuth}
-      >
-        Authenticate with WhatsApp
-      </Button> */}
     </Box>
   );
 };
