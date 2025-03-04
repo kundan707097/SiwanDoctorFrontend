@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ADD2 as ADD } from "../Controllers/ApiControllers2";
+import { ADD2 as ADD, GET2 } from "../Controllers/ApiControllers2";
 import Loading from "./Loading";
 import currency from "../Controllers/currency";
 import user from "../Controllers/user";
@@ -61,9 +61,7 @@ const AddMoney = ({ isOpen, onClose, cancelRef, closeModal, openModal }) => {
   };
 
   const reLogin = async () => {
-    let data = { phone: user?.phone };
-    let token = user.token;
-    const login = await ADD(token, "login_phone", data);
+    const login = await GET2(`get_user/${user.id}`);
     if (login.response === 200) {
       localStorage.setItem(
         "user",
@@ -82,10 +80,8 @@ const AddMoney = ({ isOpen, onClose, cancelRef, closeModal, openModal }) => {
   };
 
   const rzpNextFn = async () => {
-    let data = { phone: user?.phone };
-    let token = user.token;
     setisPaymentLoading(true);
-    const login = await ADD(token, "login_phone", data);
+    const login = await GET2(`get_user/${user.id}`);
     setisPaymentLoading(false);
     if (login.response === 200) {
       localStorage.setItem(

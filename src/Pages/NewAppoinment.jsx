@@ -1146,10 +1146,7 @@ const Step3 = ({ setPatientDetails, setStep }) => {
 };
 
 const getUserDetails = async () => {
-  const data = {
-    phone: user?.phone,
-  };
-  const user = await ADD(user.token, "login_phone", data);
+  const user = await GET(`get_user/${user.id}`);
   if (user.response !== 200) {
     throw new Error(user.message);
   }

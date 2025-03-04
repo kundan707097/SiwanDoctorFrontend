@@ -1,12 +1,10 @@
-﻿import { ADD2 as ADD } from "./ApiControllers2";
-import user from "./user";
-export const updateUserLocalStorage = async (phoneNumber) => {
+﻿import { GET2 as GET } from "./ApiControllers2";
+export const updateUserLocalStorage = async (userID) => {
   try {
-    const data = { phone: phoneNumber };
-    const res = await ADD(user.token, "login_phone", data);
+    const res = await GET(`get_user/${userID}`);
     if (res.status === true) {
       const user = { ...res.data, token: user.token };
-      console.log(user)
+      console.log(user);
       localStorage.setItem("user", JSON.stringify(user));
     } else {
       console.error(

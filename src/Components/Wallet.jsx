@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import { ADD2 as ADD, GET2 as GET } from "../Controllers/ApiControllers2";
+import { GET2 as GET } from "../Controllers/ApiControllers2";
 import currency from "../Controllers/currency";
 import user from "../Controllers/user";
 import Loading from "./Loading";
@@ -53,10 +53,7 @@ function WalletModel({ isModalOpen, closeModal, openModal }) {
   const [isMobile] = useMediaQuery("(max-width: 600px)");
 
   const reLogin = async () => {
-    let data = {
-      phone: user?.phone,
-    };
-    const login = await ADD(user.token, "login_phone", data );
+    const login = await GET(`get_user/${user.id}`);
     if (login.response === 200) {
       localStorage.setItem(
         "user",

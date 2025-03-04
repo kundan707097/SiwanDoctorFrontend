@@ -33,7 +33,7 @@ function ProfilePicture({ img }) {
     onSuccess: () => {
       showToast(toast, "success", "Profile Picture Changed");
       queryClient.invalidateQueries("user");
-      updateUserLocalStorage(user.phone);
+      updateUserLocalStorage(user.id);
     },
     onError: (error) => {
       showToast(toast, "error", error.message);
