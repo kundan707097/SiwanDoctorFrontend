@@ -90,31 +90,26 @@ const AppointmentDetails = () => {
     const res = await GET(`get_appointment/${id}`);
     return res.data;
   };
-  // req history
-  // const getReqData = async () => {
-  //   const res = await GET(`get_appointment_cancel_req/appointment/${id}`);
-  //   return res.data;
-  // };
   // const getInvoices = async () => {
   //   const res = await GET(`get_invoice/appointment/${id}`);
   //   return res.data;
   // };
-  // const getPrescription = async () => {
-  //   const res = await GET(`get_prescription/appointment/${id}`);
-  //   return res.data;
-  // };
+  const getPrescription = async () => {
+    const res = await GET(`get_prescription/appointment/${id}`);
+    return res.data || [];
+  };
   // const getQueueNumber = async () => {
   //   const res = await GET(
   //     `get_appointment_check_in_doct_date/${appointmentData?.doct_id}/${appointmentData?.date}`
   //   );
   //   return res.data;
   // };
-  // const getPatientFiles = async () => {
-  //   const res = await GET(
-  //     `get_patient_file/patient/${appointmentData?.patient_id}`
-  //   );
-  //   return res.data;
-  // };
+  const getPatientFiles = async () => {
+    const res = await GET(
+      `get_patient_file/patient/${appointmentData?.patient_id}`
+    );
+    return res.data || [];
+  };
 
   const { isLoading, data: appointmentData } = useQuery({
     queryKey: ["appointment", id],
@@ -128,10 +123,10 @@ const AppointmentDetails = () => {
   //   queryKey: ["invoice", id],
   //   queryFn: getInvoices,
   // });
-  // const { isLoading: prescriptionLoading, data: prescriptionData } = useQuery({
-  //   queryKey: ["prescription", id],
-  //   queryFn: getPrescription,
-  // });
+  const { isLoading: prescriptionLoading, data: prescriptionData } = useQuery({
+    queryKey: ["prescription", id],
+    queryFn: getPrescription,
+  });
   // const {
   //   isFetching: queueIsFetching, // This is true even during refetching
   //   data: queueData,
@@ -142,11 +137,11 @@ const AppointmentDetails = () => {
   //   enabled: !!appointmentData,
   // });
 
-  // const { isLoading: patientFilesLoading, data: patientFilesData } = useQuery({
-  //   queryKey: ["patient-files", appointmentData?.patient_id],
-  //   queryFn: getPatientFiles,
-  //   enabled: !!appointmentData,
-  // });
+  const { isLoading: patientFilesLoading, data: patientFilesData } = useQuery({
+    queryKey: ["patient-files", appointmentData?.patient_id],
+    queryFn: getPatientFiles,
+    enabled: !!appointmentData,
+  });
 
   // get request history
 
@@ -156,9 +151,8 @@ const AppointmentDetails = () => {
   // });
 
   if (
-    isLoading 
-    // ||
-    // reqHistoryLoading ||
+    isLoading ||
+    patientFilesLoading
     // invoiceLoading ||
     // prescriptionLoading ||
     // queueIsFetching ||
@@ -197,13 +191,11 @@ const AppointmentDetails = () => {
             maxW={"100vw"}
           >
             <Flex alignItems="center" mb={5}>
-              <Avatar
-                size="xl"
-                src={`${imageBaseURL}/${appointmentData.doct_image}`}
-              />
+              <Avatar size="xl" src={appointmentData.doct_image} />
               <Box ml={3}>
                 <Text fontSize="lg" fontWeight="bold">
-                  {appointmentData.doct_f_name} {appointmentData.doct_l_name}
+                  Dr. {appointmentData.doct_f_name}{" "}
+                  {appointmentData.doct_l_name}
                 </Text>
                 <Text
                   fontWeight={600}
@@ -391,7 +383,7 @@ const AppointmentDetails = () => {
                 {" "}
                 <Text fontWeight="bold">Prescriptions - </Text>
               </Flex>
-              {/* {prescriptionData.length ? (
+              {prescriptionData?.length ? (
                 prescriptionData?.map((item, index) => (
                   <Button
                     key={item.id}
@@ -413,11 +405,12 @@ const AppointmentDetails = () => {
                   py={1}
                   fontWeight={600}
                   borderRadius={4}
+                  mt={2}
                 >
                   <AlertIcon />
                   Prescriptions Not Found!
                 </Alert>
-              )} */}
+              )}
             </Box>
             <Divider my={2} mt={5} />
             <Box mt={5}>
@@ -426,7 +419,7 @@ const AppointmentDetails = () => {
                 <Text fontWeight="bold">Patient Files - </Text>
               </Flex>
 
-              {/* {patientFilesData.length ? (
+              {patientFilesData?.length ? (
                 <AnimatePresence>
                   {patientFilesData?.map((file) => (
                     <motion.div
@@ -478,9 +471,9 @@ const AppointmentDetails = () => {
                   borderRadius={4}
                 >
                   <AlertIcon />
-                  Prescriptions Not Found!
+                  Files Not Found!
                 </Alert>
-              )} */}
+              )}
             </Box>
             <Divider my={2} mt={5} />
             <Box mt={5}>
@@ -530,66 +523,27 @@ const AppointmentDetails = () => {
             ) && (
               <Box>
                 <Box
-                  bg={"red.400"}
-                  _hover={{
-                    bg: "red.500",
-                  }}
                   mt={5}
                   width="100%"
-                  size={"sm"}
+                  size={"md"}
                   as={Button}
-                  color={"#000"}
+                  colorScheme="red"
                   rightIcon={<AiOutlineRight color="#fff" />}
                   justifyContent={"space-between"}
                   alignItems={"center"}
                   textAlign={"left"}
-                  py={2}
+                  py={3}
                   h={"fit-content"}
                   onClick={() => {
-                    if (
-                      appointmentData.current_cancel_req_status ===
-                        "Approved" ||
-                      appointmentData.current_cancel_req_status === "Rejected"
-                    ) {
-                      return;
-                    }
                     onOpen();
                   }}
+                  isDisabled={
+                    appointmentData?.status === "Cancelled" ||
+                    appointmentData?.status === "Rejected"
+                  }
                 >
-                  <Box>
-                    <Text fontSize={"sm"} color={"#fff"}>
-                      Appointment Cancellation
-                    </Text>
-                    {appointmentData.current_cancel_req_status !== "Approved" ||
-                      (appointmentData.current_cancel_req_status !==
-                        "Rejected" && (
-                        <Text fontSize={"xs"} mt={1} color={"gray.100"}>
-                          Click Here to{" "}
-                          {appointmentData.current_cancel_req_status === null
-                            ? "Initiate"
-                            : "Delete"}{" "}
-                          Cancelletion Request
-                        </Text>
-                      ))}
-
-                    {appointmentData.current_cancel_req_status !== null && (
-                      <Text fontSize={"xs"} mt={1} color={"gray.100"}>
-                        Current status -{" "}
-                        {appointmentData.current_cancel_req_status}
-                      </Text>
-                    )}
-                  </Box>
+                  Cancel Appointment
                 </Box>
-                {appointmentData.current_cancel_req_status !== null && (
-                  <Box bg={"gray.200"} borderRadius={"md"} px={2} py={1} mt={2}>
-                    <Text fontSize={"sm"} fontWeight={600} mb={2}>
-                      Request History
-                    </Text>
-                    {/* {reqHistoryData?.map((item) => (
-                      <ReqHistory key={item.id} item={item} />
-                    ))} */}
-                  </Box>
-                )}
               </Box>
             )}
           </Box>
@@ -618,35 +572,29 @@ const AppointmentDetails = () => {
 
 export default AppointmentDetails;
 
-const DailogModal = ({
-  cancelRef,
-  isOpen,
-  onClose,
-  currentStatus,
-  appointID,
-}) => {
+const DailogModal = ({ cancelRef, isOpen, onClose, appointID }) => {
   const queryClient = useQueryClient();
   const toast = useToast();
 
   // initate cancel
   const handleCancellation = async (data) => {
-    let formData = {
-      appointment_id: data.id,
-      status: data.status,
-    };
     try {
-      const res = await ADD(user.token, data.url, formData);
+      const res = await ADD(
+        user.token,
+        `Cancel_appointment_status?id=${data.id}&status=${data.status}`,
+        data
+      );
       if (res.response === 200) {
-        showToast(toast, "success", "Success!");
-        // @ts-ignore
-        queryClient.invalidateQueries("cartdata");
+        showToast(toast, "success", "Appointment Cancelled!");
+        queryClient.invalidateQueries(["appointment", appointID]);
         return res;
       } else {
         showToast(toast, "error", res.message);
         return res;
       }
     } catch (error) {
-      return error;
+      console.log(error);
+      throw new Error(error);
     }
   };
 
@@ -655,9 +603,6 @@ const DailogModal = ({
       await handleCancellation(data);
     },
     onSuccess: () => {
-      // @ts-ignore
-      queryClient.invalidateQueries(["appointment-req-history", appointID]);
-      // @ts-ignore
       queryClient.invalidateQueries(["appointment", appointID]);
       onClose();
     },
@@ -680,17 +625,11 @@ const DailogModal = ({
 
       <AlertDialogContent m={{ base: 2, md: 0 }}>
         <AlertDialogHeader fontSize={"md"}>
-          {currentStatus === null
-            ? "Cancel Appointment"
-            : "Delete Cancellation Request"}{" "}
-          ?
+          Cancel Appointment ?
         </AlertDialogHeader>
         <AlertDialogCloseButton />
         <AlertDialogBody>
-          {currentStatus === null
-            ? "Are you sure , you want to cancel this appointment"
-            : "Are you sure , you want to delete cancellation request"}{" "}
-          ?
+          Are you sure , you want to cancel this appointment?
         </AlertDialogBody>
         <AlertDialogFooter>
           <Button ref={cancelRef} onClick={onClose} size={"sm"} minW={20}>
@@ -702,19 +641,10 @@ const DailogModal = ({
             size={"sm"}
             minW={20}
             onClick={() => {
-              currentStatus === null
-                ? mutation.mutate({
-                    id: appointID,
-                    status: "Initiated",
-                    url: "appointment_cancellation",
-                  })
-                : currentStatus === "Initiated"
-                ? mutation.mutate({
-                    id: appointID,
-                    status: "Initiated",
-                    url: "delete_appointment_cancellation",
-                  })
-                : null;
+              mutation.mutate({
+                id: appointID,
+                status: "Cancelled",
+              });
             }}
           >
             Yes
@@ -722,46 +652,6 @@ const DailogModal = ({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-};
-
-const ReqHistory = ({ item }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Initiated":
-        return "yellow.400"; // Replace with desired Chakra color
-      case "Rejected":
-        return "red.500"; // Replace with desired Chakra color
-      case "Approved":
-        return "green.500"; // Replace with desired Chakra color
-      case "Processing":
-        return "orange.400"; // Replace with desired Chakra color
-      default:
-        return "gray.500"; // Default color
-    }
-  };
-  return (
-    <Box>
-      {" "}
-      <Flex gap={5} align={"center"}>
-        <Box
-          bg={getStatusColor(item.status)}
-          width="8px"
-          height="8px"
-          borderRadius="50%"
-        />
-        <Box>
-          {" "}
-          <Text fontSize={"sm"} fontWeight={600}>
-            {item.status}
-          </Text>
-          <Text fontSize={"xs"} fontWeight={500} color={"gray.600"}>
-            {moment(item.created_at).format("DD-MM-YYYY hh:mm A")}
-          </Text>
-        </Box>
-      </Flex>
-      <Divider borderColor={"#fff"} my={2} borderWidth={1} />
-    </Box>
   );
 };
 

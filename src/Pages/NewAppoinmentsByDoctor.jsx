@@ -938,7 +938,7 @@ const Step4 = ({
       time_slots: selectedSlot
         ? selectedSlot.time_start
         : moment().format("hh:mm"),
-      doct_id: Doctordetails.user_id,
+      doct_id: Doctordetails.id,
       dept_id: Doctordetails.department,
       type: appoinmentType.title,
       payment_status: method == 2 ? "Unpaid" : "Paid",
@@ -1005,7 +1005,7 @@ const Step4 = ({
     time_slots: selectedSlot
       ? selectedSlot.time_start
       : moment().format("hh:mm"),
-    doct_id: String(Doctordetails.user_id), // Convert to string
+    doct_id: String(Doctordetails.id), // Convert to string
     dept_id: String(Doctordetails.department), // Convert to string
     type: appoinmentType.title,
     payment_status: "Paid",

@@ -109,7 +109,7 @@ const Signup = () => {
     }
   };
 
-  //   login the user after signup success
+  //  login the user after signup success
   const ConfirmLogin = async (phone) => {
     try {
       let data = {

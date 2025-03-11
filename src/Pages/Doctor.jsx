@@ -320,7 +320,7 @@ export default function Doctor() {
             {/* booking */}
             <Box>
               {" "}
-              {data?.stop_booking === 1 ||
+              {/* {data?.stop_booking === 1 ||
                 stopBooking.value === true ||
                 (stopBooking.value === "true" && (
                   <Alert status="error" size={"xs"} py={1} px={1} mt={4}>
@@ -330,7 +330,7 @@ export default function Doctor() {
                       Currently Not Accepting Appointments
                     </AlertTitle>
                   </Alert>
-                ))}
+                ))} */}
               <Button
                 mt={5}
                 colorScheme="blue"
@@ -345,11 +345,11 @@ export default function Doctor() {
                     navigate("/login");
                   }
                 }}
-                isDisabled={
-                  data?.stop_booking === 1 ||
-                  stopBooking.value === true ||
-                  stopBooking.value === "true"
-                }
+                // isDisabled={
+                //   data?.stop_booking === 1 ||
+                //   stopBooking.value === true ||
+                //   stopBooking.value === "true"
+                // }
               >
                 Make Appointment
               </Button>

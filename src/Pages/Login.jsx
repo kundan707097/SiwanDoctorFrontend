@@ -63,7 +63,6 @@ const Login = () => {
       let data = { emailOrPhoneNumber: phoneNumber, password: password };
       const res = await ADD("", "login", data, "application/json");
       if (res.status === true) {
-        setisLoading(false);
         const user = { ...res.data, token: res.token };
         const hasPatientRole = user.role.some(
           (r) => r.name.toLowerCase() === "patient" || r.role_id === 1
@@ -79,8 +78,11 @@ const Login = () => {
 
         localStorage.setItem("user", JSON.stringify(user));
         showToast(toast, "success", `Welcome ${user.f_name} ${user.l_name}`);
-        navigate("/", { replace: true });
-        window.location.reload();
+        setTimeout(() => {
+          setisLoading(false);
+          navigate("/", { replace: true });
+          window.location.reload();
+        }, 2000);
       }
     } catch (error) {
       showToast(toast, "error", error.message);

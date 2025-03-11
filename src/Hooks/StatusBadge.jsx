@@ -47,7 +47,7 @@ const getStatusBadge = (status) => {
     default:
       return (
         <Badge colorScheme="gray" fontSize={12} letterSpacing={0.5} p={"5px"} mt={5}>
-          Unknown
+          {status}
         </Badge>
       );
   }

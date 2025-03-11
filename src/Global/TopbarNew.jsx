@@ -165,7 +165,7 @@ export default function TopbarNew() {
               <Image
                 w={10}
                 src={`${imageBaseURL}/${logo?.value}`}
-                fallbackSrc={"/vite.svg"}
+                fallbackSrc={"/logo.svg"}
               />
               <Text
                 fontFamily={"Quicksand, sans-serif"}

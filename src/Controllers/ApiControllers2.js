@@ -40,7 +40,7 @@ const GET2 = async (endPoint) => {
   }
 };
 
-const ADD2 = async (token, endPoint, data, contentType) => {
+const ADD2 = async (token, endPoint, data) => {
   var config = {
     method: "post",
     maxBodyLength: Infinity,
@@ -48,7 +48,7 @@ const ADD2 = async (token, endPoint, data, contentType) => {
     headers: {
       Authorization: GenerateToken(token),
       Accept: "*/*",
-      "Content-Type": contentType ? contentType : "multipart/form-data",
+      "Content-Type": "multipart/form-data",
     },
     data: data,
   };
