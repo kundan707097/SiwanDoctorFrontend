@@ -1,0 +1,16 @@
+﻿{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true, 
+    "resolveJsonModule": true, 
+    "jsx": "react-jsx", 
+    "strict": true, 
+    "esModuleInterop": true, 
+    "skipLibCheck": true 
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
