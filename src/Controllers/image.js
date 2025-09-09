@@ -1,3 +1,3 @@
 ﻿import apiAddress from "./apiAddress";
-const imageBaseURL = `https://localhost:44324`;
+const imageBaseURL = `https://siwandoctorapi.onrender.com`;
 export default imageBaseURL;
