@@ -64,7 +64,7 @@ function ContactMarqee() {
                   >
                     <HStack spacing={2}>
                       <PhoneIcon boxSize={3} />
-                      <Text fontSize="sm">{phone1?.value}</Text>
+                      <Text fontSize="sm">{phone2?.value}</Text>
                     </HStack>
                   </a>
                   <a
@@ -116,7 +116,7 @@ function ContactMarqee() {
                   >
                     <HStack spacing={2}>
                       <PhoneIcon boxSize={3} />
-                      <Text fontSize="sm">{phone1?.value}</Text>
+                      <Text fontSize="sm">{phone2?.value}</Text>
                     </HStack>
                   </a>
                   <a
