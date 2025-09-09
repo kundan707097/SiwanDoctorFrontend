@@ -1,7 +1,7 @@
 ﻿import axios from "axios";
 import GenerateToken from "./token";
-const api = "https://localhost:44324/api/auth";
-// const api = "https://siwandoctorapi.onrender.com/api/auth";
+//const api = "https://localhost:44324/api/auth";
+ const api = "https://siwandoctorapi.onrender.com/api/auth";
 const handleSessionExpiration = (error) => {
   if (
     error.response &&
